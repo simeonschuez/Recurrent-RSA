@@ -13,7 +13,7 @@ from utils.numpy_functions import softmax
 class Model:
 
 	def __init__(self,path,dictionaries):
-		
+
 		self.seg2idx,self.idx2seg=dictionaries
 		self.path=path
 		self.vocab_path='data/vocab.pkl'
@@ -28,10 +28,10 @@ class Model:
 		output_size=30
 
 		transform = transforms.Compose([
-			transforms.ToTensor(), 
-			transforms.Normalize((0.485, 0.456, 0.406), 
+			transforms.ToTensor(),
+			transforms.Normalize((0.485, 0.456, 0.406),
 								 (0.229, 0.224, 0.225))])
-		
+
 		self.transform = transform
 		# Load vocabulary wrapper
 
@@ -39,9 +39,9 @@ class Model:
 		# Build Models
 		self.encoder = EncoderCNN(embed_size)
 		self.encoder.eval()  # evaluation mode (BN uses moving mean/variance)
-		self.decoder = DecoderRNN(embed_size, hidden_size, 
+		self.decoder = DecoderRNN(embed_size, hidden_size,
 							 output_size, num_layers)
-		
+
 		# Load the trained model parameters
 		self.encoder.load_state_dict(torch.load(self.encoder_path,map_location={'cuda:0': 'cpu'}))
 		self.decoder.load_state_dict(torch.load(self.decoder_path,map_location={'cuda:0': 'cpu'}))
@@ -61,18 +61,18 @@ class Model:
 		states=None
 
 		for seg in state.context_sentence:									  # maximum sampling length
-			hiddens, states = self.decoder.lstm(inputs, states)		  # (batch_size, 1, hidden_size), 
+			hiddens, states = self.decoder.lstm(inputs, states)		  # (batch_size, 1, hidden_size),
 
-			outputs = self.decoder.linear(hiddens.squeeze(1)) 
+			outputs = self.decoder.linear(hiddens.squeeze(1))
 
-			predicted = outputs.max(1)[1]   
+			predicted = outputs.max(1)[1]
 
 			predicted[0] = self.seg2idx[seg]
 			inputs = self.decoder.embed(predicted)
 			inputs = inputs.unsqueeze(1)		# (batch_size, vocab_size)
 
-		hiddens, states = self.decoder.lstm(inputs, states)		  # (batch_size, 1, hidden_size), 
-		outputs = self.decoder.linear(hiddens.squeeze(1)) 
+		hiddens, states = self.decoder.lstm(inputs, states)		  # (batch_size, 1, hidden_size),
+		outputs = self.decoder.linear(hiddens.squeeze(1))
 		output_array = outputs.squeeze(0).data.cpu().numpy()
 
 		log_softmax_array = np.log(softmax(output_array))
@@ -107,6 +107,3 @@ class Model:
 			# 	self.images.append(img_rep)
 
 			# self.images = np.asarray(self.images)
-
-
-			

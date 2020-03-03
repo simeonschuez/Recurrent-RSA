@@ -36,19 +36,19 @@ class RSA:
 				self.seg2idx=char_to_index
 
 
-	
+
 
 	def initialize_speakers(self,paths):
 
 
 		self.initial_speakers = [Model(path=path,
-			dictionaries=(self.seg2idx,self.idx2seg)) for path in paths] 
+			dictionaries=(self.seg2idx,self.idx2seg)) for path in paths]
 		self.speaker_prior = Model(path="lang_mod",
 			dictionaries=(self.seg2idx,self.idx2seg))
 		# self.initial_speaker.set_features()
 
 		# self.speaker_prior
-		
+
 		# self.images=images
 		# print("NUMBER OF IMAGES:",self.number_of_images)
 
@@ -56,18 +56,18 @@ class RSA:
 
 
 
-		
+
 
 	def flush_cache(self):
 
 		self._speaker_cache = {}
 		self._listener_cache = {}
-		self._speaker_prior_cache = {}	
+		self._speaker_prior_cache = {}
 
 	# memoization is crucial for speed of the RSA, which is recursive: memoization via decorators for speaker and listener
 	# def memoize_speaker_prior(f):
 	# 	def helper(self,state,world):
-	
+
 	# 		# world_prior_list = np.ndarray.tolist(np.ndarray.flatten(state.world_priors))
 	# 		hashable_args = state,world
 
@@ -79,7 +79,7 @@ class RSA:
 
 	def memoize_speaker(f):
 		def helper(self,state,world,depth):
-	
+
 			# world_prior_list = np.ndarray.tolist(np.ndarray.flatten(state.world_priors))
 			hashable_args = state,world,depth
 
@@ -91,7 +91,7 @@ class RSA:
 
 	def memoize_listener(f):
 		def helper(self,state,utterance,depth):
-	
+
 			# world_prior_list = np.ndarray.tolist(np.ndarray.flatten(state.world_priors))
 			hashable_args = state,utterance,depth
 
@@ -126,8 +126,8 @@ class RSA:
 
 
 			return self.initial_speakers[world.speaker].forward(state=state,world=world)
-			
-		else: 
+
+		else:
 
 			prior = self.speaker(state,world,depth=0)
 			# self.initial_speakers[world.speaker].forward(state=state,world=world)
@@ -141,7 +141,7 @@ class RSA:
 				# print(world.target,world.rationality,"FIRST")
 				out = self.listener(state=state,utterance=k,depth=depth-1)
 
-				
+
 				scores.append(out[world.target,world.rationality,world.speaker])
 
 			scores = np.asarray(scores)
@@ -150,7 +150,7 @@ class RSA:
 			scores = scores*(self.initial_speakers[world.speaker].rationality_support[world.rationality])
 			# update prior to posterior
 			# print(scores.shape,prior.shape)
-			posterior = (scores + prior) - scipy.misc.logsumexp(scores + prior)
+			posterior = (scores + prior) - scipy.special.logsumexp(scores + prior)
 			# print("POSTERIOR",posterior)
 
 			return posterior
@@ -167,7 +167,7 @@ class RSA:
 			scores = np.asarray(scores)
 			# rationality not present at s2
 			# update prior to posterior
-			posterior = (scores + prior) - scipy.misc.logsumexp(scores + prior)
+			posterior = (scores + prior) - scipy.special.logsumexp(scores + prior)
 
 			return posterior
 
@@ -210,7 +210,7 @@ class RSA:
 			scores[n_tuple]=out[utterance]
 
 		scores = scores*state.listener_rationality
-		world_posterior = (scores + world_prior) - scipy.misc.logsumexp(scores + world_prior)
+		world_posterior = (scores + world_prior) - scipy.special.logsumexp(scores + world_prior)
 		# print("world posterior listener complex shape",world_posterior.shape)
 		return world_posterior
 
@@ -251,10 +251,7 @@ class RSA:
 			scores[i]=out[utterance]
 
 		scores = scores*state.listener_rationality
-		world_posterior = (scores + world_prior) - scipy.misc.logsumexp(scores + world_prior)
+		world_posterior = (scores + world_prior) - scipy.special.logsumexp(scores + world_prior)
 		# print("world posterior listener simple shape",world_posterior.shape)
 
 		return world_posterior
-
-
-
