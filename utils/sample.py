@@ -34,7 +34,7 @@ def load_image_from_path(path, transform=None):
 
 def load_image(url, transform=None):
 
-    import urllib.request
+    #import urllib.request
     from PIL import Image as PIL_Image
     import shutil
     import requests
@@ -61,16 +61,15 @@ def load_image(url, transform=None):
     # else:
     #     new_width=224
     #     new_height=224 * (height/width)
-    
+
     # b = image.resize([int(new_width),int(new_height)],PIL_Image.LANCZOS)
     # # b = a.thumbnail([224, 224], PIL_Image.LANCZOS)
     # # c = b.crop([0,0,224,224])
     # image = b.crop([0,0,224,224])
-    
+
     if transform is not None:
         image = transform(image).unsqueeze(0)
-    
+
     # image = transforms.ToTensor()(image).unsqueeze(0)
-    
+
     return image
-    

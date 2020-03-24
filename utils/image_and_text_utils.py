@@ -2,7 +2,7 @@ import numpy as np
 from collections import defaultdict
 import os.path
 from utils.config import *
-from keras.preprocessing import image
+#from keras.preprocessing import image
 
 ###IMAGE UTILS
 
@@ -41,7 +41,7 @@ def edit_region(height,width,x_coordinate,y_coordinate):
         # check if image recentering causes box to go off the image to the left
         if(x_coordinate+(width/2)-(height/2) < 0.0):
             box = (x_coordinate,y_coordinate, x_coordinate+ \
-                    max(width,height),y_coordinate+max(width,height))              
+                    max(width,height),y_coordinate+max(width,height))
         else:
             box = (x_coordinate+(width/2)-(height/2),y_coordinate, \
                     x_coordinate+(width/2)-(height/2)+max(width,height),y_coordinate+max(width,height))
@@ -99,7 +99,7 @@ def get_rep_from_id(item,id_to_caption):
     display(resized_img)
 
     img = np.expand_dims(image.img_to_array(resized_img),0)
-    
+
     img = resnet(img_rep_layer).predict(img)
     return img
 
@@ -118,7 +118,7 @@ def get_rep_from_img_id(img_id):
     resized_img = img.resize([224,224],PIL_Image.ANTIALIAS)
 
     img = np.expand_dims(image.img_to_array(resized_img),0)
-    
+
     img = resnet(img_rep_layer).predict(img)
     return img
 
@@ -131,18 +131,18 @@ def get_img_from_url(url):
     import shutil
     import requests
     from keras.preprocessing import image
-    from PIL import Image as PIL_Image  
+    from PIL import Image as PIL_Image
     response = requests.get(url, stream=True)
     with open('charpragcap/resources/img.jpg', 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
     del response
-    
+
     img = PIL_Image.open('charpragcap/resources/img.jpg')
 
     return img
 
     # model = resnet(img_rep_layer)
-    
+
     # # file_name = "charpragcap/resources/local-filename.jpg"
     # # urllib.request.urlretrieve(url, file_name)
     # # img = PIL_Image.open(file_name)
@@ -150,7 +150,7 @@ def get_img_from_url(url):
     # img = img.resize([224,224],PIL_Image.ANTIALIAS)
     # display(img)
     # img = np.expand_dims(image.img_to_array(img),0)
-    
+
     # rep = resnet(img_rep_layer).predict(img)
     # return rep
 
@@ -161,15 +161,15 @@ def get_rep_from_url(url,model):
     import shutil
     import requests
     from keras.preprocessing import image
-    from PIL import Image as PIL_Image  
+    from PIL import Image as PIL_Image
     response = requests.get(url, stream=True)
     with open('charpragcap/resources/img.jpg', 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
     del response
-    
+
     img = PIL_Image.open('charpragcap/resources/img.jpg')
 
-    
+
     # file_name = "charpragcap/resources/local-filename.jpg"
     # urllib.request.urlretrieve(url, file_name)
     # img = PIL_Image.open(file_name)
@@ -177,7 +177,7 @@ def get_rep_from_url(url,model):
     img = img.resize([224,224],PIL_Image.ANTIALIAS)
     # display(img)
     img = np.expand_dims(image.img_to_array(img),0)
-    
+
     rep = model.predict(img)
     return rep
 
@@ -189,7 +189,7 @@ def display_image(number):
 
     id_to_caption = pickle.load(open("charpragcap/resources/id_to_caption",'rb'))
     chosen_id = list(id_to_caption)[number]
-        
+
     img_path = "data/VG_100K/"+str(chosen_id)+".jpg"
     box = id_to_caption[chosen_id][1]
     img_id,region_id = chosen_id.split("_")
@@ -203,7 +203,7 @@ def display_img_from_url(url):
     import shutil
     import requests
     from keras.preprocessing import image
-    from PIL import Image as PIL_Image  
+    from PIL import Image as PIL_Image
     response = requests.get(url, stream=True)
     with open('charpragcap/resources/img.jpg', 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
@@ -220,7 +220,7 @@ def get_img(url):
     from charpragcap.resources.models.resnet import resnet
     from charpragcap.utils.config import img_rep_layer
 
-    
+
     response = requests.get(url, stream=True)
     with open('charpragcap/resources/img.jpg', 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
@@ -229,7 +229,7 @@ def get_img(url):
     img = img.resize([224,224],PIL_Image.ANTIALIAS)
     display(img)
     rep = np.expand_dims(image.img_to_array(img),0)
-    
+
     rep = resnet(img_rep_layer).predict(img)
     return rep
 
@@ -304,5 +304,3 @@ def split_dataset(trains=train_size,vals=val_size,tests=test_size):
 
     trains,vals,tests = ids[0:num_train],ids[num_train:num_val],ids[num_val:num_test]
     return trains,vals,tests
-
-
