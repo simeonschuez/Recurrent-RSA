@@ -6,7 +6,7 @@ class RSA_World:
             speaker,
             rationality="DEFAULTBAD",
     ):
-    
+
         self.target = target
         self.rationality = rationality
         self.speaker = speaker

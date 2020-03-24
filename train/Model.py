@@ -1,13 +1,15 @@
+import sys
+import os
 import numpy as np
-import torch.nn as nn
-from torch.autograd import Variable
 from torchvision import transforms
-from utils.build_vocab import Vocabulary
-from train.image_captioning.char_model import EncoderCNN, DecoderRNN
-from PIL import Image
 import torch
-from utils.config import *
+from utils.config import sym_set
 from utils.numpy_functions import softmax
+
+# from train.image_captioning.char_model import EncoderCNN, DecoderRNN
+model_path = '/home/simeon/Dokumente/Projekte/Diversity/NLGDiversity/code/models/vanilla'
+sys.path.append(model_path)
+from coco_model import EncoderCNN, DecoderRNN
 
 
 class Model:
@@ -17,14 +19,17 @@ class Model:
         self.seg2idx, self.idx2seg = dictionaries
         self.path = path
         self.vocab_path = 'data/vocab.pkl'
-        self.encoder_path = TRAINED_MODEL_PATH + path + "-encoder-5-3000.pkl"
-        self.decoder_path = TRAINED_MODEL_PATH + path + "-decoder-5-3000.pkl"
+        # self.encoder_path = TRAINED_MODEL_PATH + path + "-encoder-5-3000.pkl"
+        # self.decoder_path = TRAINED_MODEL_PATH + path + "-decoder-5-3000.pkl"
+        trained_model_dir = '/home/simeon/Dokumente/Projekte/Diversity/NLGDiversity/code/models/trained/'
+        self.encoder_path = os.path.join(trained_model_dir ,'coco_captions-char-encoder-final.ckpt')
+        self.decoder_path = os.path.join(trained_model_dir ,'coco_captions-char-decoder-final.ckpt')
 
-        embed_size = 256
+        embed_size = 3  # 256
         hidden_size = 512
         num_layers = 1
 
-        output_size = 30
+        vocab_size = len(sym_set)  # i.e. 40, previously: 30
 
         transform = transforms.Compose([
             transforms.ToTensor(),
@@ -34,17 +39,19 @@ class Model:
         self.transform = transform
         # Load vocabulary wrapper
 
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
         # Build Models
         self.encoder = EncoderCNN(embed_size)
         self.encoder.eval()  # evaluation mode (BN uses moving mean/variance)
         self.decoder = DecoderRNN(embed_size, hidden_size,
-                                  output_size, num_layers)
+                                  vocab_size, num_layers)
 
         # Load the trained model parameters
         self.encoder.load_state_dict(torch.load(
-            self.encoder_path, map_location={'cuda:0': 'cpu'}))
+            self.encoder_path, map_location=self.device))
         self.decoder.load_state_dict(torch.load(
-            self.decoder_path, map_location={'cuda:0': 'cpu'}))
+            self.decoder_path, map_location=self.device))
 
         if torch.cuda.is_available():
             self.encoder.cuda()

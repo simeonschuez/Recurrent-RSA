@@ -1,14 +1,10 @@
-import time
+# import time
 import itertools
 import scipy
 import scipy.stats
 import numpy as np
-import math
-from PIL import Image as PIL_Image
-from utils.image_and_text_utils import index_to_char, char_to_index
-from utils.config import *
+from utils.config import index_to_char, char_to_index
 from bayesian_agents.rsaWorld import RSA_World
-from utils.numpy_functions import softmax
 from train.Model import Model
 
 
@@ -149,7 +145,8 @@ class RSA:
 
     def listener_simple(self, state, utterance, depth):
 
-        # base case listener is either neurally trained, or inferred from neural s0, given the state's current prior on images
+        # base case listener is either neurally trained,
+        # or inferred from neural s0, given the state's current prior on images
 
         world_prior = state.world_priors[state.timestep - 1]
         assert world_prior.shape == (2, 1, 1)

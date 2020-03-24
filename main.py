@@ -1,18 +1,10 @@
-# this code will generate a literal caption and a pragmatic caption (referring expression) for the first of the urls provided in the context of the rest
-
-from recursion_schemes.recursion_schemes import ana_greedy, ana_beam
+from recursion_schemes.recursion_schemes import ana_greedy  # , ana_beam
 from bayesian_agents.joint_rsa import RSA
 from utils.numpy_functions import uniform_vector, make_initial_prior
-from utils.config import *
-from collections import defaultdict
-#from keras.preprocessing import image
-import numpy as np
-import pickle
-import time
-#import requests
-import re
-import matplotlib
-matplotlib.use('Agg')
+
+# this code will generate a literal caption
+# and a pragmatic caption (referring expression)
+# for the first of the urls provided in the context of the rest
 
 
 urls = [

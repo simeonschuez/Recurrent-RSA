@@ -2,7 +2,6 @@ import numpy as np
 from collections import defaultdict
 import os.path
 from utils.config import *
-#from keras.preprocessing import image
 
 ###IMAGE UTILS
 
