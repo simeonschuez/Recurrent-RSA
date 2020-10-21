@@ -12,9 +12,6 @@ file_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(file_dir, os.pardir, os.pardir)
 model_dir = os.path.join(root_dir, 'models')
 
-sys.path.append(model_dir)
-sys.path.append(model_dir+'/adaptiveg/')
-
 from adaptive import Encoder2Decoder
 
 

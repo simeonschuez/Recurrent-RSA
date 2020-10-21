@@ -19,8 +19,8 @@ class RSA:
 
     def __init__(
             self,
-            seg_type,
             vocabulary,
+            seg_type="char",
             tf=False,
     ):
 

@@ -46,10 +46,60 @@ def get_images_from_cluster(i, image_cluster, transform, image_dir):
 
     return images
 
+def rsa_decode_images(
+        image_tensors, speaker_model, rat, beam=False, mixed=False,
+        device=device, separator='',
+        ):
+
+    # the model starts of assuming it's equally likely
+    # any image is the intended referent
+    initial_image_prior = uniform_vector(len(image_tensors))
+    initial_rationality_prior = uniform_vector(1)
+    initial_speaker_prior = uniform_vector(1)
+    initial_world_prior = make_initial_prior(
+        initial_image_prior, initial_rationality_prior, initial_speaker_prior)
+
+    # set the possible images and rationalities
+    speaker_model.initial_speakers.set_features(
+        images=image_tensors, tf=False, rationalities=rat)
+
+    if beam:
+        if mixed:
+            caption = ana_mixed_beam(
+                speaker_model, target=0, speaker_rationality=0,
+                speaker=0, start_from=list(""),
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
+                )
+        else:
+            caption = ana_beam(
+                speaker_model, target=0, depth=1, speaker_rationality=0,
+                speaker=0, start_from=list(""),
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
+                )
+    else:
+        if mixed:
+            caption = ana_mixed_greedy(
+                speaker_model, target=0, speaker_rationality=0,
+                speaker=0, start_from=list(""),
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
+                )
+        else:
+            caption = ana_greedy(
+                speaker_model, target=0, depth=1, speaker_rationality=0,
+                speaker=0, start_from=list(""),
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
+                )
+
+    return caption[0][0]
+
 
 def rsa_decode_cluster(
     index, speaker_model, rat, image_cluster,
-    transform, image_dir, beam=False, mixed=False,device=device
+    transform, image_dir, beam=False, mixed=False,device=device, separator='',
         ):
 
     image_tensors = get_images_from_cluster(
@@ -73,26 +123,30 @@ def rsa_decode_cluster(
             caption = ana_mixed_beam(
                 speaker_model, target=0, speaker_rationality=0,
                 speaker=0, start_from=list(""),
-                initial_world_prior=initial_world_prior, no_progress_bar=True
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
                 )
         else:
             caption = ana_beam(
                 speaker_model, target=0, depth=1, speaker_rationality=0,
                 speaker=0, start_from=list(""),
-                initial_world_prior=initial_world_prior, no_progress_bar=True
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
                 )
     else:
         if mixed:
             caption = ana_mixed_greedy(
                 speaker_model, target=0, speaker_rationality=0,
                 speaker=0, start_from=list(""),
-                initial_world_prior=initial_world_prior, no_progress_bar=True
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
                 )
         else:
             caption = ana_greedy(
                 speaker_model, target=0, depth=1, speaker_rationality=0,
                 speaker=0, start_from=list(""),
-                initial_world_prior=initial_world_prior, no_progress_bar=True
+                initial_world_prior=initial_world_prior, no_progress_bar=True,
+                separator=separator
                 )
 
     out = {

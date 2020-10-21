@@ -1,6 +1,19 @@
 import numpy as np
+from collections import defaultdict
 
 max_sentence_length = 100
+start_token = {"word":"<start>","char":'^'}
+stop_token = {"word":"<end>","char":'$'}
+pad_token = '&'
+sym_set = list('&^$ abcdefghijklmnopqrstuvwxyz')
+
+char_to_index = defaultdict(int)
+for i,x in enumerate(sym_set):
+    char_to_index[x] = i
+index_to_char = defaultdict(lambda:'')
+for i,x in enumerate(sym_set):
+    index_to_char[i] = x
+
 
 def vectorize_caption(sentence):
     if len(sentence) > 0 and sentence[-1] in list("!?."):
@@ -19,6 +32,7 @@ def vectorize_caption(sentence):
     one_hot[np.arange(caption_out.shape[1]), caption_out] = 1
     caption_out = one_hot
     return caption_in, caption_out
+
 
 class RSA_State:
 

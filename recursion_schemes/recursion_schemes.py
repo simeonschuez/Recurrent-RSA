@@ -17,7 +17,8 @@ Recursion schemes for the RSA
 def ana_greedy(
         rsa, initial_world_prior, speaker_rationality, speaker, target,
         pass_prior=False, listener_rationality=1.0, depth=0, start_from=[],
-        start_token='<start>', end_token='<end>', no_progress_bar=False
+        start_token='<start>', end_token='<end>', no_progress_bar=False,
+        separator=''
         ):
 
     """
@@ -90,13 +91,14 @@ def ana_greedy(
 
     world_posterior = state.world_priors[:state.timestep+1][:5]
 
-    return [("".join(state.context_sentence), summed_probs)]
+    return [(separator.join(state.context_sentence), summed_probs)]
 
 
 def ana_mixed_greedy(
         rsa, initial_world_prior, speaker_rationality, speaker, target,
         pass_prior=False, listener_rationality=1.0, start_from=[],
-        start_token='<start>', end_token='<end>', no_progress_bar=False
+        start_token='<start>', end_token='<end>', no_progress_bar=False,
+        separator=''
         ):
 
     """
@@ -182,12 +184,16 @@ def ana_mixed_greedy(
 
     world_posterior = state.world_priors[:state.timestep+1][:5]
 
-    return [("".join(state.context_sentence), summed_probs)]
+    return [(separator.join(state.context_sentence), summed_probs)]
 
 # But within the n-th order ethno-metapragmatic perspective, this creative indexical effect is the motivated realization, or performable execution, of an already constituted framework of semiotic value.
 
 # Sina: set pass prior to FALSE! This is much faster
-def ana_beam(rsa, initial_world_prior, speaker_rationality, target, speaker, pass_prior=False, listener_rationality=1.0, depth=0, start_from=[], beam_width=5, cut_rate=1, decay_rate=0.0, beam_decay=0, no_progress_bar=False):
+def ana_beam(
+    rsa, initial_world_prior, speaker_rationality, target, speaker,
+    pass_prior=False, listener_rationality=1.0, depth=0, start_from=[],
+    beam_width=5, cut_rate=1, decay_rate=0.0, beam_decay=0,
+    no_progress_bar=False, separator=''):
     """
     speaker_rationality,listener_rationality:
             see speaker and listener code for what they do: control strength of conditioning
@@ -313,14 +319,14 @@ def ana_beam(rsa, initial_world_prior, speaker_rationality, target, speaker, pas
                 for sent, worldprior, prob in sent_worldprior_prob:
                 # add sentences with stop token to final_sentences
                     final_sentence = copy.deepcopy(sent)
-                    output.append(("".join(final_sentence), prob))
+                    output.append((separator.join(final_sentence), prob))
                 return output
 
     output = []
     for sent, worldprior, prob in sent_worldprior_prob:
         # add sentences with stop token to final_sentences
         final_sentence = copy.deepcopy(sent)
-        output.append(("".join(final_sentence), prob))
+        output.append((separator.join(final_sentence), prob))
     return output
 
 
@@ -373,7 +379,11 @@ def ana_beam(rsa, initial_world_prior, speaker_rationality, target, speaker, pas
     #        output.append(("".join(sent), prob))
 
     #    return output
-def ana_mixed_beam(rsa, initial_world_prior, speaker_rationality, target, speaker, pass_prior=False, listener_rationality=1.0, start_from=[], beam_width=5, cut_rate=1, decay_rate=0.0, beam_decay=0, no_progress_bar=False):
+def ana_mixed_beam(
+    rsa, initial_world_prior, speaker_rationality, target, speaker,
+    pass_prior=False, listener_rationality=1.0, start_from=[], beam_width=5,
+    cut_rate=1, decay_rate=0.0, beam_decay=0, no_progress_bar=False,
+    separator=''):
     """
     speaker_rationality,listener_rationality:
             see speaker and listener code for what they do: control strength of conditioning
@@ -500,12 +510,12 @@ def ana_mixed_beam(rsa, initial_world_prior, speaker_rationality, target, speake
                 for sent, worldprior, prob in sent_worldprior_prob:
                 # add sentences with stop token to final_sentences
                     final_sentence = copy.deepcopy(sent)
-                    output.append(("".join(final_sentence), prob))
+                    output.append((separator.join(final_sentence), prob))
                 return output
 
     output = []
     for sent, worldprior, prob in sent_worldprior_prob:
         # add sentences with stop token to final_sentences
         final_sentence = copy.deepcopy(sent)
-        output.append(("".join(final_sentence), prob))
+        output.append((separator.join(final_sentence), prob))
     return output
