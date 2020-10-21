@@ -12,14 +12,14 @@ start_token = {"word": "<start>", "char": '^'}
 stop_token = {"word": "<end>", "char": '$'}
 pad_token = '&'
 # sym_set = list('&^$ abcdefghijklmnopqrstuvwxyz')
-sym_set = list('^$& ' + string.digits + string.ascii_lowercase)
+sym_set = list('&^$?' + ' ' + string.digits + string.ascii_lowercase)
 
 stride_length = 10
 start_index = 1
 stop_index = 2
 pad_index = 0
 batch_size = 50
-max_sentence_length = 60
+max_sentence_length = 100
 
 train_size, val_size, test_size = 0.98, 0.01, 0.01
 rep_size = 2048

@@ -1,6 +1,24 @@
 import numpy as np
-from utils.image_and_text_utils import max_sentence_length, vectorize_caption
 
+max_sentence_length = 100
+
+def vectorize_caption(sentence):
+    if len(sentence) > 0 and sentence[-1] in list("!?."):
+        sentence = sentence[:-1]
+    sentence = start_token["char"] + sentence + stop_token["char"]
+    sentence = list(sentence)
+    while len(sentence) < max_sentence_length + 2:
+        sentence.append(pad_token)
+
+    caption_in = sentence[:-1]
+    caption_out = sentence[1:]
+    caption_in = np.asarray([char_to_index[x] for x in caption_in])
+    caption_out = np.expand_dims(np.asarray(
+        [char_to_index[x] for x in caption_out]), 0)
+    one_hot = np.zeros((caption_out.shape[1], len(sym_set)))
+    one_hot[np.arange(caption_out.shape[1]), caption_out] = 1
+    caption_out = one_hot
+    return caption_in, caption_out
 
 class RSA_State:
 
