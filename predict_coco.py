@@ -47,7 +47,7 @@ def get_images_from_cluster(i, image_cluster, transform, image_dir):
     return images
 
 def rsa_decode_images(
-        image_tensors, speaker_model, rat, beam=False, mixed=False,
+        image_tensors, speaker_model, rat, location_features=None, beam=False, mixed=False,
         device=device, separator='',
         ):
 
@@ -61,7 +61,9 @@ def rsa_decode_images(
 
     # set the possible images and rationalities
     speaker_model.initial_speakers.set_features(
-        images=image_tensors, tf=False, rationalities=rat)
+            images=image_tensors, tf=False,
+            rationalities=rat, location_features=location_features
+        )
 
     if beam:
         if mixed:

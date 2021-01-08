@@ -8,18 +8,24 @@ from rsa_utils.sample import load_image
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 file_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(file_dir, os.pardir, os.pardir)
 model_dir = os.path.join(root_dir, 'models')
-
-from adaptive import Encoder2Decoder
-
 
 class Model:
 
     """ wrap encoder and decoder models for rsa """
 
-    def __init__(self, dictionaries, model_path):
+    def __init__(self, dictionaries, model_path, mtype):
+
+        if mtype == 'reg':
+            # import reg model
+            from adaptive_reg import Encoder2Decoder
+        else:
+            # import captioning model
+            from adaptive import Encoder2Decoder
 
         self.model_path = model_path
 
@@ -29,7 +35,7 @@ class Model:
         self.model.load_state_dict(torch.load(
             self.model_path, map_location='cpu'
             ))
-        self.model.cuda()
+        self.model.to(device)
         self.model.eval()
 
         CROP_SIZE = 224
@@ -63,7 +69,7 @@ class Model:
 
             # set captions to the current segment for next step
             captions = Variable(
-                torch.LongTensor(1, 1).fill_(self.seg2idx[seg]).cuda())
+                torch.LongTensor(1, 1).fill_(self.seg2idx[seg]).to(device))
 
             attention.append(atten_weights)
             Beta.append(beta)
@@ -81,15 +87,23 @@ class Model:
 
         return log_softmax_array
 
-    def set_features(self, images, rationalities, format='image', tf=False):
+    def set_features(
+            self,
+            images, rationalities, location_features=None,
+            format='image', tf=False
+            ):
 
         self.number_of_images = len(images)
         self.number_of_rationalities = len(rationalities)
         self.rationality_support = rationalities
 
-        if format == 'url':
-            images = [load_image(url, self.transform) for url in images]
-
-        self.features = [
-            self.model.init_sampler(i) for i in images
-            ]
+        if location_features is not None:
+            # REG
+            self.features = [
+                    self.model.init_sampler(i, j)
+                    for i, j in zip(images, location_features)
+                ]
+        else:
+            self.features = [
+                    self.model.init_sampler(i) for i in images
+                ]

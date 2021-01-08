@@ -36,11 +36,12 @@ class RSA:
             self.idx2seg = vocabulary.idx2word
             self.seg2idx = vocabulary.word2idx
 
-    def initialize_speakers(self, model_path):
+    def initialize_speakers(self, model_path, mtype='caption'):
         """ initialize neural models for initial speakers + prior """
 
         self.initial_speakers = Model(
-            dictionaries=(self.seg2idx, self.idx2seg), model_path=model_path
+            dictionaries=(self.seg2idx, self.idx2seg), model_path=model_path,
+            mtype=mtype
             )
 
     def flush_cache(self):
